@@ -1,0 +1,97 @@
+from collections import deque
+
+class City: # Representa una ciudad y sus conexiones
+    def __init__(self, name):
+        self.name = name
+        self.connections = []
+
+    def add_connection(self, city):
+        self.connections.append(city)
+    
+    def __repr__(self):
+        return self.name
+
+class State: # Representa el estado actual en la búsqueda
+    def __init__(self, current_city, path):
+        self.current_city = current_city
+        self.path = path
+
+    def next(self): # Genera los estados sucesores
+        next_states = [] 
+        for city in self.current_city.connections:
+            if city not in self.path:
+                next_states.append(State(city, self.path + [self.current_city]))
+        return next_states
+
+def dfs(start_city, goal_city): # Búsqueda en profundidad (DFS)
+    start_state = State(start_city, [])
+    stack = [start_state]
+    while stack:
+        state = stack.pop()
+        if state.current_city == goal_city:
+            return state.path + [state.current_city]
+        next_states = state.next()
+        next_states.reverse()
+        stack.extend(next_states)
+    return None
+
+def bfs(start_city, goal_city):  # Búsqueda en anchura (BFS)
+    start_state = State(start_city, [])
+    queue = deque([start_state])  # usamos cola (FIFO)
+    while queue:
+        state = queue.popleft()
+        if state.current_city == goal_city:
+            return state.path + [state.current_city]
+        next_states = state.next()
+        queue.extend(next_states)
+    return None
+
+seattle = City("Seattle")
+vancouver = City("Vancouver")
+calgary = City("Calgary")
+saskatoon = City("Saskatoon")
+edmonton = City("Edmonton")
+portland = City("Portland")
+san_francisco = City("San Francisco")
+las_vegas = City("Las Vegas")
+denver = City("Denver")
+dallas = City("Dallas")
+minneapolis = City("Minneapolis")
+chicago = City("Chicago")
+miami = City("Miami")
+
+seattle.add_connection(portland)
+seattle.add_connection(vancouver)
+vancouver.add_connection(calgary)
+vancouver.add_connection(seattle)
+calgary.add_connection(saskatoon)
+calgary.add_connection(denver)
+saskatoon.add_connection(minneapolis)
+saskatoon.add_connection(edmonton)
+edmonton.add_connection(saskatoon)
+portland.add_connection(seattle)
+portland.add_connection(san_francisco)
+san_francisco.add_connection(las_vegas)
+san_francisco.add_connection(portland)
+las_vegas.add_connection(san_francisco)
+las_vegas.add_connection(denver)
+denver.add_connection(calgary)
+denver.add_connection(dallas)
+denver.add_connection(minneapolis)
+dallas.add_connection(denver)
+dallas.add_connection(miami)
+dallas.add_connection(chicago)
+minneapolis.add_connection(saskatoon)
+minneapolis.add_connection(denver)
+minneapolis.add_connection(chicago)
+chicago.add_connection(minneapolis)
+chicago.add_connection(dallas)
+miami.add_connection(dallas)
+
+# Example usage
+path = dfs(seattle, miami)
+print("Ruta encontrada (DFS):", path)
+
+path = bfs(seattle, miami)
+print("Ruta encontrada (BFS):", path)
+
